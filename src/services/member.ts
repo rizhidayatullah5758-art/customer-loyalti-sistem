@@ -18,7 +18,7 @@ export async function getMemberDashboard() {
   const { data: benefits, error: benefitError } = await supabase
     .from('membership_benefit_templates')
     .select('id,code,title_id,benefit_type,amount,min_transaction,period_days')
-    .eq('level', summaryResult.data.level)
+    .eq('level', summaryResult.data.level ?? 'classic')
     .eq('active', true)
     .order('code');
 
