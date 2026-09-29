@@ -19,12 +19,6 @@ export type PaymentConfig = {
     nmid: string;
     payload: string;
   };
-  gateway: {
-    provider: string;
-    configured: boolean;
-    enabled: boolean;
-    feeChargedToCustomer: boolean;
-  };
 };
 
 function asObject(value: Json | null | undefined): Record<string, Json | undefined> {
@@ -35,10 +29,6 @@ function asObject(value: Json | null | undefined): Record<string, Json | undefin
 
 function textValue(value: Json | undefined, fallback = '') {
   return typeof value === 'string' ? value : fallback;
-}
-
-function boolValue(value: Json | undefined, fallback = false) {
-  return typeof value === 'boolean' ? value : fallback;
 }
 
 function normalizePaymentError(message: string) {
@@ -62,14 +52,13 @@ export async function getPaymentConfig(): Promise<PaymentConfig> {
   const { data, error } = await supabase
     .from('app_settings')
     .select('key,value')
-    .in('key', ['payment_bank_transfer', 'qris_manual', 'payment_gateway']);
+    .in('key', ['payment_bank_transfer', 'qris_manual']);
 
   if (error) throw error;
 
   const map = new Map((data ?? []).map((item) => [item.key, asObject(item.value)]));
   const bank = map.get('payment_bank_transfer') ?? {};
   const qris = map.get('qris_manual') ?? {};
-  const gateway = map.get('payment_gateway') ?? {};
 
   return {
     bankTransfer: {
@@ -83,12 +72,6 @@ export async function getPaymentConfig(): Promise<PaymentConfig> {
       merchantName: textValue(qris.merchant_name, 'STARPOINT GARAGE'),
       nmid: textValue(qris.nmid),
       payload: textValue(qris.payload),
-    },
-    gateway: {
-      provider: textValue(gateway.provider, 'duitku'),
-      configured: boolValue(gateway.configured),
-      enabled: boolValue(gateway.enabled),
-      feeChargedToCustomer: boolValue(gateway.fee_charged_to_customer, true),
     },
   };
 }
@@ -159,9 +142,9 @@ export async function submitManualPayment(input: {
 
 export function paymentMethodLabel(method: PaymentMethod) {
   const map: Record<PaymentMethod, string> = {
-    duitku_qris: 'Gateway QRIS',
-    duitku_va: 'Virtual Account',
-    duitku_ewallet: 'E-Wallet',
+    duitku_qris: 'Metode nonaktif',
+    duitku_va: 'Metode nonaktif',
+    duitku_ewallet: 'Metode nonaktif',
     qris_bri_manual: 'QRIS BRI',
     bank_transfer_bri: 'Transfer BRI',
     cash: 'Cash',
