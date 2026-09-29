@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Starpoint Garage",
+    "slug": "starpoint-garage",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "starpointgarage",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "plugins": [
+      "expo-router"
+    ],
+    "android": {
+      "package": "com.rapscreative.starpointgarage",
+      "versionCode": 1
+    },
+    "ios": {
+      "bundleIdentifier": "com.rapscreative.starpointgarage"
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "appRole": "member"
+    }
+  }
+}
