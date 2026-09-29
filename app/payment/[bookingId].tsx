@@ -68,7 +68,7 @@ export default function PaymentScreen() {
   const bookingId = Array.isArray(params.bookingId) ? params.bookingId[0] : params.bookingId;
 
   const [booking, setBooking] = useState<Booking | null>(null);
-  const [summary, setSummary] = useState<Summary>(null);
+  const [summary, setSummary] = useState<Summary | null>(null);
   const [payments, setPayments] = useState<Payments>([]);
   const [config, setConfig] = useState<Config | null>(null);
   const [loyalty, setLoyalty] = useState<Loyalty | null>(null);
