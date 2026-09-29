@@ -8,7 +8,15 @@
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Starpoint Garage menggunakan foto yang Anda pilih sebagai foto profil member.",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ]
     ],
     "android": {
       "package": "com.rapscreative.starpointgarage",
