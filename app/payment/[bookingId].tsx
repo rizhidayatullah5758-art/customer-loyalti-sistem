@@ -131,15 +131,59 @@ export default function PaymentScreen() {
     [payments],
   );
 
-  const activeRewards = useMemo(
-    () =>
-      (loyalty?.rewards ?? []).filter(
-        (item) =>
-          item.status === 'issued' &&
-          (!item.expires_at || new Date(item.expires_at).getTime() > Date.now()),
-      ),
-    [loyalty],
-  );
+  const activeRewards = useMemo(() => {
+    if (!booking) return [];
+
+    return (loyalty?.rewards ?? []).filter((item) => {
+      if (
+        item.status !== 'issued' ||
+        (item.expires_at && new Date(item.expires_at).getTime() <= Date.now())
+      ) {
+        return false;
+      }
+
+      const catalog = item.reward_catalog;
+      const benefit = item.membership_benefit_templates;
+      const serviceCode = booking.services?.code;
+
+      if (catalog) {
+        if (booking.quoted_total < catalog.min_transaction) return false;
+
+        if (catalog.reward_type === 'service') {
+          return (
+            catalog.service_id === booking.service_id &&
+            (!catalog.vehicle_category ||
+              catalog.vehicle_category === booking.vehicle_category)
+          );
+        }
+
+        if (catalog.reward_type === 'addon') {
+          if (catalog.code === 'deep_addon_25k') {
+            return ['addon_tar', 'addon_rust', 'addon_degreaser'].includes(
+              serviceCode ?? '',
+            );
+          }
+          return !catalog.service_id || catalog.service_id === booking.service_id;
+        }
+
+        if (catalog.reward_type === 'voucher' && catalog.code === 'voucher_30k') {
+          return serviceCode === 'paint_correction';
+        }
+
+        return catalog.reward_type === 'voucher';
+      }
+
+      if (benefit) {
+        if (booking.quoted_total < benefit.min_transaction) return false;
+        if (benefit.benefit_type === 'addon' && benefit.code === 'allin_free') {
+          return serviceCode === 'addon_allin';
+        }
+        return benefit.benefit_type === 'voucher';
+      }
+
+      return false;
+    });
+  }, [loyalty, booking]);
 
   async function chooseProof() {
     const result = await ImagePicker.launchImageLibraryAsync({
