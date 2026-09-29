@@ -6,7 +6,6 @@
     "orientation": "portrait",
     "scheme": "starpointgarage",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": true,
     "plugins": [
       "expo-router",
       [
