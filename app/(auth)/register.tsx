@@ -144,8 +144,7 @@ export default function RegisterScreen() {
             <Image source={{ uri: photo.uri }} style={{ width: '100%', height: '100%' }} />
           ) : (
             <Text style={{ color: Theme.colors.accent, textAlign: 'center', fontWeight: '800' }}>
-              PILIH{'
-'}FOTO
+              PILIH{'\\n'}FOTO
             </Text>
           )}
         </Pressable>
