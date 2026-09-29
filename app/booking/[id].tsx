@@ -75,9 +75,11 @@ export default function BookingDetailScreen() {
     : ['awaiting_payment', 'confirmed'].includes(booking.status) && booking.reschedule_count < 2;
 
   async function confirmCancel() {
+    const currentBooking = booking;
+
     Alert.alert(
       'Batalkan booking?',
-      booking.deposit_required > 0
+      currentBooking.deposit_required > 0
         ? 'Jika DP sudah dibayar, Rp50.000 atau nilai DP yang tercatat bersifat hangus sesuai ketentuan.'
         : 'Booking akan dibatalkan.',
       [
@@ -88,7 +90,7 @@ export default function BookingDetailScreen() {
           onPress: async () => {
             setBusy(true);
             try {
-              await cancelBooking(booking.id);
+              await cancelBooking(currentBooking.id);
               await load();
             } catch (value) {
               Alert.alert(
