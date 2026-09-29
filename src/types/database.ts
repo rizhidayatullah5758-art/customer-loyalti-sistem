@@ -1013,6 +1013,7 @@ export type Database = {
           referral_id: string | null
           reward_id: string | null
           story_id: string | null
+          story_reward_day: string | null
         }
         Insert: {
           booking_id?: string | null
@@ -1028,6 +1029,7 @@ export type Database = {
           referral_id?: string | null
           reward_id?: string | null
           story_id?: string | null
+          story_reward_day?: string | null
         }
         Update: {
           booking_id?: string | null
@@ -1043,6 +1045,7 @@ export type Database = {
           referral_id?: string | null
           reward_id?: string | null
           story_id?: string | null
+          story_reward_day?: string | null
         }
         Relationships: [
           {
@@ -1511,6 +1514,67 @@ export type Database = {
           },
         ]
       }
+      story_member_blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "story_member_blocks_blocked_id_fkey"
+            columns: ["blocked_id"]
+            isOneToOne: false
+            referencedRelation: "member_membership_summary"
+            referencedColumns: ["member_id"]
+          },
+          {
+            foreignKeyName: "story_member_blocks_blocked_id_fkey"
+            columns: ["blocked_id"]
+            isOneToOne: false
+            referencedRelation: "member_point_balances"
+            referencedColumns: ["member_id"]
+          },
+          {
+            foreignKeyName: "story_member_blocks_blocked_id_fkey"
+            columns: ["blocked_id"]
+            isOneToOne: false
+            referencedRelation: "member_profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "story_member_blocks_blocker_id_fkey"
+            columns: ["blocker_id"]
+            isOneToOne: false
+            referencedRelation: "member_membership_summary"
+            referencedColumns: ["member_id"]
+          },
+          {
+            foreignKeyName: "story_member_blocks_blocker_id_fkey"
+            columns: ["blocker_id"]
+            isOneToOne: false
+            referencedRelation: "member_point_balances"
+            referencedColumns: ["member_id"]
+          },
+          {
+            foreignKeyName: "story_member_blocks_blocker_id_fkey"
+            columns: ["blocker_id"]
+            isOneToOne: false
+            referencedRelation: "member_profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       story_reactions: {
         Row: {
           created_at: string
@@ -1780,6 +1844,7 @@ export type Database = {
           starts_at: string
         }[]
       }
+      block_story_member: { Args: { p_member_id: string }; Returns: boolean }
       booking_payment_summary: {
         Args: { p_booking_id: string }
         Returns: {
@@ -1905,6 +1970,55 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      create_member_story: {
+        Args: { p_caption?: string; p_media_path: string }
+        Returns: {
+          caption: string | null
+          created_at: string
+          delete_reason: string | null
+          deleted_by: string | null
+          expires_at: string
+          fire_count: number
+          heart_count: number
+          id: string
+          like_count: number
+          media_path: string
+          member_id: string
+          status: string
+          view_count: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "stories"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      delete_my_story: {
+        Args: { p_story_id: string }
+        Returns: {
+          caption: string | null
+          created_at: string
+          delete_reason: string | null
+          deleted_by: string | null
+          expires_at: string
+          fire_count: number
+          heart_count: number
+          id: string
+          like_count: number
+          media_path: string
+          member_id: string
+          status: string
+          view_count: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "stories"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      record_story_view: { Args: { p_story_id: string }; Returns: boolean }
       redeem_reward: {
         Args: { p_reward_catalog_id: string }
         Returns: {
@@ -1924,6 +2038,25 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "member_rewards"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      report_story: {
+        Args: { p_reason: string; p_story_id: string }
+        Returns: {
+          created_at: string
+          id: string
+          reason: string
+          reporter_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          story_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "story_reports"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -1961,6 +2094,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      set_story_reaction: {
+        Args: { p_reaction: string; p_story_id: string }
+        Returns: string
       }
       staff_update_booking_status: {
         Args: {
@@ -2052,6 +2189,8 @@ export type Database = {
         }
       }
       sync_my_membership_rewards: { Args: never; Returns: number }
+      sync_story_expirations: { Args: never; Returns: number }
+      unblock_story_member: { Args: { p_member_id: string }; Returns: boolean }
       update_my_member_profile: {
         Args: {
           p_avatar_path: string
