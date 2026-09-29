@@ -58,7 +58,7 @@ export default function HomeScreen() {
 
   const load = useCallback(async () => {
     setError('');
-    if (!data) setLoading(true);
+    setLoading(true);
     try {
       const next = await getHomeDashboard();
       setData(next);
@@ -71,7 +71,7 @@ export default function HomeScreen() {
     } finally {
       setLoading(false);
     }
-  }, [data]);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
