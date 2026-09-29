@@ -634,6 +634,7 @@ export type Database = {
           member_code: string
           member_number: number
           onboarding_completed: boolean
+          qr_token: string
           referral_code: string
           referred_by: string | null
           status: Database["public"]["Enums"]["member_status"]
@@ -653,6 +654,7 @@ export type Database = {
           member_code: string
           member_number?: number
           onboarding_completed?: boolean
+          qr_token?: string
           referral_code: string
           referred_by?: string | null
           status?: Database["public"]["Enums"]["member_status"]
@@ -672,6 +674,7 @@ export type Database = {
           member_code?: string
           member_number?: number
           onboarding_completed?: boolean
+          qr_token?: string
           referral_code?: string
           referred_by?: string | null
           status?: Database["public"]["Enums"]["member_status"]
@@ -1397,6 +1400,7 @@ export type Database = {
           display_name: string
           email: string
           role: Database["public"]["Enums"]["staff_role"]
+          updated_at: string
         }
         Insert: {
           active?: boolean
@@ -1404,6 +1408,7 @@ export type Database = {
           display_name: string
           email: string
           role: Database["public"]["Enums"]["staff_role"]
+          updated_at?: string
         }
         Update: {
           active?: boolean
@@ -1411,6 +1416,7 @@ export type Database = {
           display_name?: string
           email?: string
           role?: Database["public"]["Enums"]["staff_role"]
+          updated_at?: string
         }
         Relationships: []
       }
@@ -2018,6 +2024,274 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      owner_adjust_member_points: {
+        Args: { p_delta: number; p_description: string; p_member_id: string }
+        Returns: number
+      }
+      owner_moderate_story: {
+        Args: {
+          p_action: string
+          p_reason: string
+          p_story_id: string
+          p_suspend_member?: boolean
+        }
+        Returns: {
+          caption: string | null
+          created_at: string
+          delete_reason: string | null
+          deleted_by: string | null
+          expires_at: string
+          fire_count: number
+          heart_count: number
+          id: string
+          like_count: number
+          media_path: string
+          member_id: string
+          status: string
+          view_count: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "stories"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      owner_review_story_report: {
+        Args: { p_report_id: string; p_status: string }
+        Returns: {
+          created_at: string
+          id: string
+          reason: string
+          reporter_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          story_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "story_reports"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      owner_save_banner: {
+        Args: {
+          p_action_type?: string
+          p_action_value?: string
+          p_active?: boolean
+          p_banner_id: string
+          p_ends_at?: string
+          p_image_path: string
+          p_sort_order?: number
+          p_starts_at?: string
+          p_title: string
+        }
+        Returns: {
+          action_type: string
+          action_value: string | null
+          active: boolean
+          created_at: string
+          created_by: string | null
+          ends_at: string | null
+          id: string
+          image_path: string
+          sort_order: number
+          starts_at: string | null
+          title: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "banners"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      owner_save_booking_slot: {
+        Args: {
+          p_capacity: number
+          p_notes?: string
+          p_priority_only?: boolean
+          p_public_release_at?: string
+          p_service_id: string
+          p_slot_id: string
+          p_starts_at: string
+          p_status?: string
+        }
+        Returns: {
+          capacity: number
+          created_at: string
+          created_by: string | null
+          ends_at: string
+          id: string
+          notes: string | null
+          priority_only: boolean
+          public_release_at: string | null
+          service_id: string
+          starts_at: string
+          status: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "booking_slots"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      owner_update_member_birth_date: {
+        Args: { p_birth_date: string; p_member_id: string; p_reason?: string }
+        Returns: {
+          activated_at: string | null
+          avatar_path: string | null
+          birth_date: string
+          birth_date_edit_count: number
+          created_at: string
+          email: string
+          full_name: string
+          marketing_notifications: boolean
+          member_code: string
+          member_number: number
+          onboarding_completed: boolean
+          qr_token: string
+          referral_code: string
+          referred_by: string | null
+          status: Database["public"]["Enums"]["member_status"]
+          updated_at: string
+          user_id: string
+          username: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "member_profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      owner_update_member_status: {
+        Args: {
+          p_member_id: string
+          p_reason?: string
+          p_status: Database["public"]["Enums"]["member_status"]
+        }
+        Returns: {
+          activated_at: string | null
+          avatar_path: string | null
+          birth_date: string
+          birth_date_edit_count: number
+          created_at: string
+          email: string
+          full_name: string
+          marketing_notifications: boolean
+          member_code: string
+          member_number: number
+          onboarding_completed: boolean
+          qr_token: string
+          referral_code: string
+          referred_by: string | null
+          status: Database["public"]["Enums"]["member_status"]
+          updated_at: string
+          user_id: string
+          username: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "member_profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      owner_update_service_config: {
+        Args: {
+          p_active: boolean
+          p_booking_enabled: boolean
+          p_capacity_default: number
+          p_duration_minutes: number
+          p_minimum_deposit: number
+          p_requires_deposit: boolean
+          p_service_id: string
+        }
+        Returns: {
+          active: boolean
+          booking_enabled: boolean
+          capacity_default: number
+          code: string
+          consultation_only: boolean
+          created_at: string
+          description_id: string | null
+          duration_label: string | null
+          duration_minutes: number | null
+          home_service_whatsapp: boolean
+          id: string
+          minimum_deposit: number
+          name_en: string | null
+          name_id: string
+          requires_deposit: boolean
+          sort_order: number
+          updated_at: string
+          workshop_only: boolean
+        }
+        SetofOptions: {
+          from: "*"
+          to: "services"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      owner_update_service_price: {
+        Args: {
+          p_active?: boolean
+          p_amount: number
+          p_price_label?: string
+          p_service_id: string
+          p_vehicle_category: Database["public"]["Enums"]["vehicle_category"]
+        }
+        Returns: {
+          active: boolean
+          amount: number | null
+          created_at: string
+          id: string
+          price_label: string | null
+          service_id: string
+          vehicle_category:
+            | Database["public"]["Enums"]["vehicle_category"]
+            | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "service_prices"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      owner_update_warranty: {
+        Args: {
+          p_next_maintenance_on: string
+          p_notes?: string
+          p_status: string
+          p_warranty_id: string
+        }
+        Returns: {
+          booking_id: string
+          created_at: string
+          ends_on: string
+          id: string
+          member_id: string
+          next_maintenance_on: string | null
+          notes: string | null
+          starts_on: string
+          status: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "coating_warranties"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       record_story_view: { Args: { p_story_id: string }; Returns: boolean }
       redeem_reward: {
         Args: { p_reward_catalog_id: string }
@@ -2099,6 +2373,17 @@ export type Database = {
         Args: { p_reaction: string; p_story_id: string }
         Returns: string
       }
+      staff_create_checkin: {
+        Args: {
+          p_booking_id?: string
+          p_override_reason?: string
+          p_payment_id?: string
+          p_qr_value: string
+        }
+        Returns: Json
+      }
+      staff_dashboard_summary: { Args: never; Returns: Json }
+      staff_lookup_member_by_qr: { Args: { p_qr_value: string }; Returns: Json }
       staff_update_booking_status: {
         Args: {
           p_booking_id: string
@@ -2210,6 +2495,7 @@ export type Database = {
           member_code: string
           member_number: number
           onboarding_completed: boolean
+          qr_token: string
           referral_code: string
           referred_by: string | null
           status: Database["public"]["Enums"]["member_status"]
