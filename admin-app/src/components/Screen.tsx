@@ -1,0 +1,2 @@
+import type {ReactNode} from 'react';import {SafeAreaView,ScrollView,View} from 'react-native';import {Theme} from '@/src/theme';
+export function Screen({children,scroll=true}:{children:ReactNode;scroll?:boolean}){const body=<View style={{flex:1,padding:18}}>{children}</View>;return <SafeAreaView style={{flex:1,backgroundColor:Theme.colors.background}}>{scroll?<ScrollView contentContainerStyle={{flexGrow:1}}>{body}</ScrollView>:body}</SafeAreaView>;}
