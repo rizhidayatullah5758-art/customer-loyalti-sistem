@@ -55,3 +55,24 @@ EXPO_PUBLIC_APP_ENV=production
 ```
 
 The publishable key is client-safe by design, while all privileged keys must remain server-side.
+
+
+## Payment mode
+
+Starpoint Garage V1 uses **manual payment only**.
+
+Enabled methods:
+- QRIS BRI
+- BRI bank transfer
+- Cash at outlet
+
+Payment flow:
+1. Member submits payment or selects "Saya Sudah Bayar".
+2. Payment status becomes `waiting_verification`.
+3. Staff verifies the payment.
+4. On approval, payment becomes `paid`.
+5. Booking/payment/points update through the backend.
+
+Third-party payment gateways are disabled. No Duitku credential, KYC, gateway webhook, or gateway transaction fee is required for V1.
+
+Birthday Premium Signature Wash is valid for **2 calendar days starting on the member's birthday**.
