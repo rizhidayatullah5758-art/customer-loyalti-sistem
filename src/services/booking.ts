@@ -130,7 +130,7 @@ export async function createBooking(input: {
     p_slot_id: input.slotId,
     p_vehicle_type: input.vehicleType.trim(),
     p_vehicle_category: input.vehicleCategory,
-    p_notes: input.notes?.trim() || null,
+    p_notes: input.notes?.trim() || undefined,
   });
 
   if (error) throw new Error(normalizeError(error.message));
