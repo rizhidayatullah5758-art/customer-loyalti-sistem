@@ -652,26 +652,6 @@ export default function PaymentScreen() {
         </>
       ) : null}
 
-      <View style={[cardStyle(), { marginTop: 12 }]}>
-        <Text style={{ color: Theme.colors.text, fontSize: 18, fontWeight: '900' }}>
-          Payment Gateway
-        </Text>
-        {config.gateway.enabled && config.gateway.configured ? (
-          <Text style={{ color: Theme.colors.success, marginTop: 8 }}>
-            Gateway {config.gateway.provider.toUpperCase()} aktif.
-          </Text>
-        ) : (
-          <Text style={{ color: Theme.colors.textMuted, lineHeight: 20, marginTop: 8 }}>
-            Struktur gateway {config.gateway.provider.toUpperCase()} sudah disiapkan. Aktivasi transaksi otomatis menunggu merchant credential.
-          </Text>
-        )}
-        {config.gateway.feeChargedToCustomer ? (
-          <Text style={{ color: Theme.colors.textMuted, fontSize: 12, marginTop: 8 }}>
-            Biaya layanan gateway akan ditampilkan dan dibebankan ke customer sebelum pembayaran.
-          </Text>
-        ) : null}
-      </View>
-
       <View style={cardStyle()}>
         <Text style={{ color: Theme.colors.text, fontSize: 18, fontWeight: '900', marginBottom: 8 }}>
           Riwayat Pembayaran
