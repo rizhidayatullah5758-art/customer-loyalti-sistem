@@ -895,6 +895,7 @@ export type Database = {
           amount: number
           booking_id: string | null
           created_at: string
+          expires_at: string | null
           external_reference: string | null
           id: string
           kind: Database["public"]["Enums"]["payment_kind"]
@@ -902,8 +903,11 @@ export type Database = {
           method: Database["public"]["Enums"]["payment_method"]
           notes: string | null
           paid_at: string | null
+          payment_code: string
+          payment_number: number
           proof_path: string | null
           provider_fee: number
+          provider_payload: Json
           refunded_at: string | null
           status: Database["public"]["Enums"]["payment_status"]
           updated_at: string
@@ -914,6 +918,7 @@ export type Database = {
           amount: number
           booking_id?: string | null
           created_at?: string
+          expires_at?: string | null
           external_reference?: string | null
           id?: string
           kind: Database["public"]["Enums"]["payment_kind"]
@@ -921,8 +926,11 @@ export type Database = {
           method: Database["public"]["Enums"]["payment_method"]
           notes?: string | null
           paid_at?: string | null
+          payment_code: string
+          payment_number?: number
           proof_path?: string | null
           provider_fee?: number
+          provider_payload?: Json
           refunded_at?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
           updated_at?: string
@@ -933,6 +941,7 @@ export type Database = {
           amount?: number
           booking_id?: string | null
           created_at?: string
+          expires_at?: string | null
           external_reference?: string | null
           id?: string
           kind?: Database["public"]["Enums"]["payment_kind"]
@@ -940,8 +949,11 @@ export type Database = {
           method?: Database["public"]["Enums"]["payment_method"]
           notes?: string | null
           paid_at?: string | null
+          payment_code?: string
+          payment_number?: number
           proof_path?: string | null
           provider_fee?: number
+          provider_payload?: Json
           refunded_at?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
           updated_at?: string
@@ -1689,6 +1701,70 @@ export type Database = {
       }
     }
     Functions: {
+      apply_birthday_reward_to_booking: {
+        Args: { p_booking_id: string }
+        Returns: {
+          amount: number
+          booking_id: string | null
+          created_at: string
+          expires_at: string | null
+          external_reference: string | null
+          id: string
+          kind: Database["public"]["Enums"]["payment_kind"]
+          member_id: string
+          method: Database["public"]["Enums"]["payment_method"]
+          notes: string | null
+          paid_at: string | null
+          payment_code: string
+          payment_number: number
+          proof_path: string | null
+          provider_fee: number
+          provider_payload: Json
+          refunded_at: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+          updated_at: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "payments"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      apply_member_reward_to_booking: {
+        Args: { p_booking_id: string; p_member_reward_id: string }
+        Returns: {
+          amount: number
+          booking_id: string | null
+          created_at: string
+          expires_at: string | null
+          external_reference: string | null
+          id: string
+          kind: Database["public"]["Enums"]["payment_kind"]
+          member_id: string
+          method: Database["public"]["Enums"]["payment_method"]
+          notes: string | null
+          paid_at: string | null
+          payment_code: string
+          payment_number: number
+          proof_path: string | null
+          provider_fee: number
+          provider_payload: Json
+          refunded_at: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+          updated_at: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "payments"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       available_booking_slots: {
         Args: { p_service_id: string }
         Returns: {
@@ -1702,6 +1778,19 @@ export type Database = {
           public_release_at: string
           service_id: string
           starts_at: string
+        }[]
+      }
+      booking_payment_summary: {
+        Args: { p_booking_id: string }
+        Returns: {
+          booking_id: string
+          booking_status: Database["public"]["Enums"]["booking_status"]
+          deposit_required: number
+          fully_paid: boolean
+          minimum_payment_now: number
+          paid_total: number
+          quoted_total: number
+          remaining_balance: number
         }[]
       }
       cancel_member_booking: {
@@ -1734,6 +1823,44 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "bookings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      create_manual_payment: {
+        Args: {
+          p_amount: number
+          p_booking_id: string
+          p_method: Database["public"]["Enums"]["payment_method"]
+          p_notes?: string
+          p_proof_path?: string
+        }
+        Returns: {
+          amount: number
+          booking_id: string | null
+          created_at: string
+          expires_at: string | null
+          external_reference: string | null
+          id: string
+          kind: Database["public"]["Enums"]["payment_kind"]
+          member_id: string
+          method: Database["public"]["Enums"]["payment_method"]
+          notes: string | null
+          paid_at: string | null
+          payment_code: string
+          payment_number: number
+          proof_path: string | null
+          provider_fee: number
+          provider_payload: Json
+          refunded_at: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+          updated_at: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "payments"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -1774,6 +1901,29 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "bookings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      redeem_reward: {
+        Args: { p_reward_catalog_id: string }
+        Returns: {
+          benefit_template_id: string | null
+          booking_id: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          issued_at: string
+          member_id: string
+          points_spent: number
+          reward_catalog_id: string | null
+          source: string
+          status: string
+          used_at: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "member_rewards"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -1849,6 +1999,59 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      staff_verify_manual_payment: {
+        Args: { p_approved: boolean; p_notes?: string; p_payment_id: string }
+        Returns: {
+          amount: number
+          booking_id: string | null
+          created_at: string
+          expires_at: string | null
+          external_reference: string | null
+          id: string
+          kind: Database["public"]["Enums"]["payment_kind"]
+          member_id: string
+          method: Database["public"]["Enums"]["payment_method"]
+          notes: string | null
+          paid_at: string | null
+          payment_code: string
+          payment_number: number
+          proof_path: string | null
+          provider_fee: number
+          provider_payload: Json
+          refunded_at: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+          updated_at: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "payments"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      sync_my_birthday_reward: {
+        Args: never
+        Returns: {
+          booking_id: string | null
+          created_at: string
+          expires_on: string
+          id: string
+          member_id: string
+          reward_year: number
+          starts_on: string
+          status: string
+          used_at: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "birthday_rewards"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      sync_my_membership_rewards: { Args: never; Returns: number }
       update_my_member_profile: {
         Args: {
           p_avatar_path: string
