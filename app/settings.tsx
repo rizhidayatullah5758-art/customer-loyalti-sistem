@@ -148,6 +148,31 @@ export default function SettingsScreen() {
           marginBottom: 12,
         }}
       >
+        <Text style={{ color: Theme.colors.text, fontSize: 17, fontWeight: '900' }}>
+          Community
+        </Text>
+        <Pressable onPress={() => router.push('/community-guidelines')} style={{ marginTop: 12 }}>
+          <Text style={{ color: Theme.colors.accent, fontWeight: '800' }}>
+            COMMUNITY GUIDELINES ›
+          </Text>
+        </Pressable>
+        <Pressable onPress={() => router.push('/blocked-members')} style={{ marginTop: 12 }}>
+          <Text style={{ color: Theme.colors.accent, fontWeight: '800' }}>
+            MEMBER DIBLOKIR ›
+          </Text>
+        </Pressable>
+      </View>
+
+      <View
+        style={{
+          padding: 18,
+          borderRadius: 20,
+          backgroundColor: Theme.colors.surface,
+          borderWidth: 1,
+          borderColor: Theme.colors.border,
+          marginBottom: 12,
+        }}
+      >
         <Text style={{ color: Theme.colors.text, fontSize: 17, fontWeight: '900', marginBottom: 8 }}>Keamanan</Text>
         <Text style={{ color: Theme.colors.textMuted, lineHeight: 20, marginBottom: 14 }}>
           Perubahan password dilakukan melalui link aman yang dikirim ke email akun.
