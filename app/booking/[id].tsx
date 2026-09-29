@@ -66,16 +66,18 @@ export default function BookingDetailScreen() {
     );
   }
 
-  const service = booking.services;
-  const slot = booking.booking_slots;
+  const currentBooking = booking;
+  const service = currentBooking.services;
+  const slot = currentBooking.booking_slots;
   const isPremium = service?.code === 'premium_wash';
-  const canCancel = booking.status === 'awaiting_payment' || booking.status === 'confirmed';
+  const canCancel =
+    currentBooking.status === 'awaiting_payment' || currentBooking.status === 'confirmed';
   const canReschedule = isPremium
-    ? ['confirmed', 'late', 'no_show'].includes(booking.status)
-    : ['awaiting_payment', 'confirmed'].includes(booking.status) && booking.reschedule_count < 2;
+    ? ['confirmed', 'late', 'no_show'].includes(currentBooking.status)
+    : ['awaiting_payment', 'confirmed'].includes(currentBooking.status) &&
+      currentBooking.reschedule_count < 2;
 
   async function confirmCancel() {
-    const currentBooking = booking;
 
     Alert.alert(
       'Batalkan booking?',
