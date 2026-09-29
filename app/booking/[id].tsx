@@ -6,6 +6,12 @@ import { BrandHeader } from '@/src/components/BrandHeader';
 import { PrimaryButton } from '@/src/components/PrimaryButton';
 import { Screen } from '@/src/components/Screen';
 import { cancelBooking, getBooking } from '@/src/services/booking';
+import {
+  getBookingPaymentSummary,
+  listBookingPayments,
+  paymentMethodLabel,
+  paymentStatusLabel,
+} from '@/src/services/payment';
 import { Theme } from '@/src/theme';
 import {
   bookingStatusLabel,
@@ -16,12 +22,16 @@ import {
 } from '@/src/utils/format';
 
 type Booking = Awaited<ReturnType<typeof getBooking>>;
+type PaymentSummary = Awaited<ReturnType<typeof getBookingPaymentSummary>>;
+type BookingPayments = Awaited<ReturnType<typeof listBookingPayments>>;
 
 export default function BookingDetailScreen() {
   const params = useLocalSearchParams<{ id: string }>();
   const bookingId = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const [booking, setBooking] = useState<Booking | null>(null);
+  const [paymentSummary, setPaymentSummary] = useState<PaymentSummary>(null);
+  const [payments, setPayments] = useState<BookingPayments>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -31,7 +41,14 @@ export default function BookingDetailScreen() {
     setLoading(true);
     setError('');
     try {
-      setBooking(await getBooking(bookingId));
+      const [bookingData, summaryData, paymentData] = await Promise.all([
+        getBooking(bookingId),
+        getBookingPaymentSummary(bookingId),
+        listBookingPayments(bookingId),
+      ]);
+      setBooking(bookingData);
+      setPaymentSummary(summaryData);
+      setPayments(paymentData);
     } catch {
       setError('Detail booking belum dapat dimuat.');
     } finally {
@@ -77,12 +94,20 @@ export default function BookingDetailScreen() {
     : ['awaiting_payment', 'confirmed'].includes(currentBooking.status) &&
       currentBooking.reschedule_count < 2;
 
-  async function confirmCancel() {
+  const waitingPayment = payments.find(
+    (item) => item.status === 'waiting_verification' && item.kind !== 'reward',
+  );
 
+  const canPay =
+    !!paymentSummary &&
+    paymentSummary.remaining_balance > 0 &&
+    !['cancelled', 'no_show'].includes(currentBooking.status);
+
+  async function confirmCancel() {
     Alert.alert(
       'Batalkan booking?',
       currentBooking.deposit_required > 0
-        ? 'Jika DP sudah dibayar, Rp50.000 atau nilai DP yang tercatat bersifat hangus sesuai ketentuan.'
+        ? 'Jika DP sudah dibayar, nilai DP yang tercatat bersifat hangus sesuai ketentuan.'
         : 'Booking akan dibatalkan.',
       [
         { text: 'Kembali', style: 'cancel' },
@@ -114,7 +139,7 @@ export default function BookingDetailScreen() {
         <Text style={{ color: Theme.colors.accent, fontWeight: '800' }}>‹ Kembali</Text>
       </Pressable>
 
-      <BrandHeader eyebrow={booking.booking_code} title={service?.name_id ?? 'Booking'} />
+      <BrandHeader eyebrow={currentBooking.booking_code} title={service?.name_id ?? 'Booking'} />
 
       <View
         style={{
@@ -130,10 +155,10 @@ export default function BookingDetailScreen() {
           STATUS
         </Text>
         <Text style={{ color: Theme.colors.accent, fontSize: 22, fontWeight: '900', marginTop: 7 }}>
-          {bookingStatusLabel(booking.status)}
+          {bookingStatusLabel(currentBooking.status)}
         </Text>
 
-        {booking.used_priority_access ? (
+        {currentBooking.used_priority_access ? (
           <Text style={{ color: Theme.colors.accent, fontSize: 12, fontWeight: '800', marginTop: 8 }}>
             Priority Booking
           </Text>
@@ -156,55 +181,110 @@ export default function BookingDetailScreen() {
 
         <Text style={{ color: Theme.colors.textMuted }}>Motor</Text>
         <Text style={{ color: Theme.colors.text, fontWeight: '800', marginTop: 4, marginBottom: 14 }}>
-          {booking.vehicle_type} · {vehicleCategoryLabel(booking.vehicle_category)}
+          {currentBooking.vehicle_type} · {vehicleCategoryLabel(currentBooking.vehicle_category)}
         </Text>
 
         <Text style={{ color: Theme.colors.textMuted }}>Jadwal</Text>
         <Text style={{ color: Theme.colors.text, fontWeight: '800', marginTop: 4, marginBottom: 14 }}>
-          {slot ? `${formatDate(slot.starts_at)} · ${formatTime(slot.starts_at)} – ${formatTime(slot.ends_at)}` : '-'}
+          {slot
+            ? `${formatDate(slot.starts_at)} · ${formatTime(slot.starts_at)} – ${formatTime(slot.ends_at)}`
+            : '-'}
         </Text>
 
         <Text style={{ color: Theme.colors.textMuted }}>Nilai treatment</Text>
         <Text style={{ color: Theme.colors.text, fontWeight: '800', marginTop: 4 }}>
-          {booking.quoted_total > 0 ? formatRupiah(booking.quoted_total) : 'Konsultasi'}
+          {currentBooking.quoted_total > 0 ? formatRupiah(currentBooking.quoted_total) : 'Konsultasi'}
         </Text>
 
-        {booking.deposit_required > 0 ? (
+        {currentBooking.deposit_required > 0 ? (
           <>
             <Text style={{ color: Theme.colors.textMuted, marginTop: 14 }}>DP minimum</Text>
             <Text style={{ color: Theme.colors.text, fontWeight: '800', marginTop: 4 }}>
-              {formatRupiah(booking.deposit_required)}
+              {formatRupiah(currentBooking.deposit_required)}
             </Text>
           </>
         ) : null}
 
-        {booking.notes ? (
+        {currentBooking.notes ? (
           <>
             <Text style={{ color: Theme.colors.textMuted, marginTop: 14 }}>Catatan</Text>
-            <Text style={{ color: Theme.colors.text, marginTop: 4, lineHeight: 20 }}>{booking.notes}</Text>
+            <Text style={{ color: Theme.colors.text, marginTop: 4, lineHeight: 20 }}>
+              {currentBooking.notes}
+            </Text>
           </>
         ) : null}
       </View>
 
-      {booking.status === 'awaiting_payment' ? (
+      {paymentSummary ? (
         <View
           style={{
-            padding: 16,
-            borderRadius: 16,
-            backgroundColor: Theme.colors.accentSoft,
+            padding: 18,
+            borderRadius: 20,
+            backgroundColor: Theme.colors.surface,
             borderWidth: 1,
             borderColor: Theme.colors.border,
             marginBottom: 12,
           }}
         >
-          <Text style={{ color: Theme.colors.accent, fontWeight: '900' }}>Menunggu Pembayaran DP</Text>
-          <Text style={{ color: Theme.colors.textMuted, lineHeight: 19, marginTop: 6 }}>
-            Metode pembayaran otomatis dan manual akan aktif pada tahap Payment berikutnya.
+          <Text style={{ color: Theme.colors.text, fontSize: 17, fontWeight: '900', marginBottom: 13 }}>
+            Pembayaran
           </Text>
+
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
+            <Text style={{ color: Theme.colors.textMuted }}>Sudah dibayar / reward</Text>
+            <Text style={{ color: Theme.colors.success, fontWeight: '800' }}>
+              {formatRupiah(paymentSummary.paid_total)}
+            </Text>
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ color: Theme.colors.text, fontWeight: '900' }}>Sisa tagihan</Text>
+            <Text
+              style={{
+                color: paymentSummary.fully_paid ? Theme.colors.success : Theme.colors.accent,
+                fontWeight: '900',
+              }}
+            >
+              {formatRupiah(paymentSummary.remaining_balance)}
+            </Text>
+          </View>
+
+          {waitingPayment ? (
+            <View
+              style={{
+                marginTop: 14,
+                borderRadius: 14,
+                padding: 13,
+                backgroundColor: Theme.colors.accentSoft,
+              }}
+            >
+              <Text style={{ color: Theme.colors.accent, fontWeight: '900' }}>
+                {paymentStatusLabel(waitingPayment.status)}
+              </Text>
+              <Text style={{ color: Theme.colors.textMuted, fontSize: 12, marginTop: 5 }}>
+                {waitingPayment.payment_code} · {paymentMethodLabel(waitingPayment.method)} ·{' '}
+                {formatRupiah(waitingPayment.amount)}
+              </Text>
+            </View>
+          ) : null}
         </View>
       ) : null}
 
-      {booking.status === 'completed' ? (
+      {canPay ? (
+        <View style={{ marginBottom: 10 }}>
+          <PrimaryButton
+            title={waitingPayment ? 'LIHAT PEMBAYARAN' : 'BAYAR SEKARANG'}
+            onPress={() =>
+              router.push({
+                pathname: '/payment/[bookingId]',
+                params: { bookingId: currentBooking.id },
+              })
+            }
+            disabled={busy}
+          />
+        </View>
+      ) : null}
+
+      {currentBooking.status === 'completed' ? (
         <View
           style={{
             padding: 16,
@@ -217,7 +297,10 @@ export default function BookingDetailScreen() {
         >
           <Text style={{ color: Theme.colors.success, fontWeight: '900' }}>Treatment selesai</Text>
           <Text style={{ color: Theme.colors.textMuted, marginTop: 6 }}>
-            Selesai: {booking.completed_at ? `${formatDate(booking.completed_at)} · ${formatTime(booking.completed_at)}` : '-'}
+            Selesai:{' '}
+            {currentBooking.completed_at
+              ? `${formatDate(currentBooking.completed_at)} · ${formatTime(currentBooking.completed_at)}`
+              : '-'}
           </Text>
         </View>
       ) : null}
@@ -229,7 +312,7 @@ export default function BookingDetailScreen() {
             onPress={() =>
               router.push({
                 pathname: '/booking/[id]/reschedule',
-                params: { id: booking.id },
+                params: { id: currentBooking.id },
               })
             }
             disabled={busy}
