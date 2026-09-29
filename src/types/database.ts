@@ -181,6 +181,79 @@ export type Database = {
           },
         ]
       }
+      booking_reschedules: {
+        Row: {
+          booking_id: string
+          created_at: string
+          from_slot_id: string
+          id: string
+          member_id: string
+          reschedule_number: number
+          to_slot_id: string
+        }
+        Insert: {
+          booking_id: string
+          created_at?: string
+          from_slot_id: string
+          id?: string
+          member_id: string
+          reschedule_number: number
+          to_slot_id: string
+        }
+        Update: {
+          booking_id?: string
+          created_at?: string
+          from_slot_id?: string
+          id?: string
+          member_id?: string
+          reschedule_number?: number
+          to_slot_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_reschedules_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_reschedules_from_slot_id_fkey"
+            columns: ["from_slot_id"]
+            isOneToOne: false
+            referencedRelation: "booking_slots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_reschedules_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "member_membership_summary"
+            referencedColumns: ["member_id"]
+          },
+          {
+            foreignKeyName: "booking_reschedules_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "member_point_balances"
+            referencedColumns: ["member_id"]
+          },
+          {
+            foreignKeyName: "booking_reschedules_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "member_profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "booking_reschedules_to_slot_id_fkey"
+            columns: ["to_slot_id"]
+            isOneToOne: false
+            referencedRelation: "booking_slots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       booking_slots: {
         Row: {
           capacity: number
@@ -188,6 +261,9 @@ export type Database = {
           created_by: string | null
           ends_at: string
           id: string
+          notes: string | null
+          priority_only: boolean
+          public_release_at: string | null
           service_id: string
           starts_at: string
           status: string
@@ -199,6 +275,9 @@ export type Database = {
           created_by?: string | null
           ends_at: string
           id?: string
+          notes?: string | null
+          priority_only?: boolean
+          public_release_at?: string | null
           service_id: string
           starts_at: string
           status?: string
@@ -210,6 +289,9 @@ export type Database = {
           created_by?: string | null
           ends_at?: string
           id?: string
+          notes?: string | null
+          priority_only?: boolean
+          public_release_at?: string | null
           service_id?: string
           starts_at?: string
           status?: string
@@ -227,6 +309,8 @@ export type Database = {
       }
       bookings: {
         Row: {
+          booking_code: string
+          booking_number: number
           cancelled_at: string | null
           completed_at: string | null
           confirmed_at: string | null
@@ -245,10 +329,13 @@ export type Database = {
           status: Database["public"]["Enums"]["booking_status"]
           treatment_started_at: string | null
           updated_at: string
+          used_priority_access: boolean
           vehicle_category: Database["public"]["Enums"]["vehicle_category"]
           vehicle_type: string
         }
         Insert: {
+          booking_code: string
+          booking_number?: number
           cancelled_at?: string | null
           completed_at?: string | null
           confirmed_at?: string | null
@@ -267,10 +354,13 @@ export type Database = {
           status?: Database["public"]["Enums"]["booking_status"]
           treatment_started_at?: string | null
           updated_at?: string
+          used_priority_access?: boolean
           vehicle_category: Database["public"]["Enums"]["vehicle_category"]
           vehicle_type: string
         }
         Update: {
+          booking_code?: string
+          booking_number?: number
           cancelled_at?: string | null
           completed_at?: string | null
           confirmed_at?: string | null
@@ -289,6 +379,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["booking_status"]
           treatment_started_at?: string | null
           updated_at?: string
+          used_priority_access?: boolean
           vehicle_category?: Database["public"]["Enums"]["vehicle_category"]
           vehicle_type?: string
         }
@@ -1598,6 +1689,166 @@ export type Database = {
       }
     }
     Functions: {
+      available_booking_slots: {
+        Args: { p_service_id: string }
+        Returns: {
+          access_mode: string
+          available_capacity: number
+          booked_count: number
+          capacity: number
+          ends_at: string
+          id: string
+          priority_only: boolean
+          public_release_at: string
+          service_id: string
+          starts_at: string
+        }[]
+      }
+      cancel_member_booking: {
+        Args: { p_booking_id: string }
+        Returns: {
+          booking_code: string
+          booking_number: number
+          cancelled_at: string | null
+          completed_at: string | null
+          confirmed_at: string | null
+          created_at: string
+          deposit_forfeited: boolean
+          deposit_required: number
+          id: string
+          member_id: string
+          no_show_at: string | null
+          notes: string | null
+          original_booking_id: string | null
+          quoted_total: number
+          reschedule_count: number
+          service_id: string
+          slot_id: string | null
+          status: Database["public"]["Enums"]["booking_status"]
+          treatment_started_at: string | null
+          updated_at: string
+          used_priority_access: boolean
+          vehicle_category: Database["public"]["Enums"]["vehicle_category"]
+          vehicle_type: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "bookings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      create_member_booking: {
+        Args: {
+          p_notes?: string
+          p_service_id: string
+          p_slot_id: string
+          p_vehicle_category: Database["public"]["Enums"]["vehicle_category"]
+          p_vehicle_type: string
+        }
+        Returns: {
+          booking_code: string
+          booking_number: number
+          cancelled_at: string | null
+          completed_at: string | null
+          confirmed_at: string | null
+          created_at: string
+          deposit_forfeited: boolean
+          deposit_required: number
+          id: string
+          member_id: string
+          no_show_at: string | null
+          notes: string | null
+          original_booking_id: string | null
+          quoted_total: number
+          reschedule_count: number
+          service_id: string
+          slot_id: string | null
+          status: Database["public"]["Enums"]["booking_status"]
+          treatment_started_at: string | null
+          updated_at: string
+          used_priority_access: boolean
+          vehicle_category: Database["public"]["Enums"]["vehicle_category"]
+          vehicle_type: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "bookings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      reschedule_member_booking: {
+        Args: { p_booking_id: string; p_new_slot_id: string }
+        Returns: {
+          booking_code: string
+          booking_number: number
+          cancelled_at: string | null
+          completed_at: string | null
+          confirmed_at: string | null
+          created_at: string
+          deposit_forfeited: boolean
+          deposit_required: number
+          id: string
+          member_id: string
+          no_show_at: string | null
+          notes: string | null
+          original_booking_id: string | null
+          quoted_total: number
+          reschedule_count: number
+          service_id: string
+          slot_id: string | null
+          status: Database["public"]["Enums"]["booking_status"]
+          treatment_started_at: string | null
+          updated_at: string
+          used_priority_access: boolean
+          vehicle_category: Database["public"]["Enums"]["vehicle_category"]
+          vehicle_type: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "bookings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      staff_update_booking_status: {
+        Args: {
+          p_booking_id: string
+          p_status: Database["public"]["Enums"]["booking_status"]
+        }
+        Returns: {
+          booking_code: string
+          booking_number: number
+          cancelled_at: string | null
+          completed_at: string | null
+          confirmed_at: string | null
+          created_at: string
+          deposit_forfeited: boolean
+          deposit_required: number
+          id: string
+          member_id: string
+          no_show_at: string | null
+          notes: string | null
+          original_booking_id: string | null
+          quoted_total: number
+          reschedule_count: number
+          service_id: string
+          slot_id: string | null
+          status: Database["public"]["Enums"]["booking_status"]
+          treatment_started_at: string | null
+          updated_at: string
+          used_priority_access: boolean
+          vehicle_category: Database["public"]["Enums"]["vehicle_category"]
+          vehicle_type: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "bookings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       update_my_member_profile: {
         Args: {
           p_avatar_path: string
