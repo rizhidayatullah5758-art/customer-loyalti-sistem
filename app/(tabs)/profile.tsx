@@ -137,7 +137,7 @@ export default function ProfileScreen() {
       <View style={[cardStyle(true), { alignItems: 'center' }]}>
         <Text style={{ color: Theme.colors.text, fontSize: 17, fontWeight: '900', marginBottom: 16 }}>QR Member</Text>
         <View style={{ backgroundColor: '#FFFFFF', padding: 14, borderRadius: 18 }}>
-          <QRCode value={`SPG:${profile.member_code}`} size={190} backgroundColor="#FFFFFF" color="#090A0C" />
+          <QRCode value={`SPGQ:${profile.qr_token}`} size={190} backgroundColor="#FFFFFF" color="#090A0C" />
         </View>
         <Text style={{ color: Theme.colors.textMuted, fontSize: 12, lineHeight: 18, textAlign: 'center', marginTop: 14 }}>
           QR ini statis. Staff akan mencocokkan nama dan foto profil saat check-in.
