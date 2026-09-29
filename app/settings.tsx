@@ -116,6 +116,28 @@ export default function SettingsScreen() {
         <PrimaryButton title="GANTI FOTO PROFIL" onPress={changePhoto} loading={busy} disabled={!data} />
       </View>
 
+      <Pressable
+        onPress={() => router.push('/rewards')}
+        style={{
+          padding: 18,
+          borderRadius: 20,
+          backgroundColor: Theme.colors.surface,
+          borderWidth: 1,
+          borderColor: Theme.colors.border,
+          marginBottom: 12,
+        }}
+      >
+        <Text style={{ color: Theme.colors.text, fontSize: 17, fontWeight: '900' }}>
+          Voucher, Reward & Point
+        </Text>
+        <Text style={{ color: Theme.colors.textMuted, lineHeight: 20, marginTop: 7 }}>
+          Lihat voucher membership, birthday reward, katalog redeem dan riwayat point.
+        </Text>
+        <Text style={{ color: Theme.colors.accent, fontWeight: '900', marginTop: 12 }}>
+          BUKA LOYALTY CENTER ›
+        </Text>
+      </Pressable>
+
       <View
         style={{
           padding: 18,
