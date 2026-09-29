@@ -30,7 +30,7 @@ export default function BookingDetailScreen() {
   const bookingId = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const [booking, setBooking] = useState<Booking | null>(null);
-  const [paymentSummary, setPaymentSummary] = useState<PaymentSummary>(null);
+  const [paymentSummary, setPaymentSummary] = useState<PaymentSummary | null>(null);
   const [payments, setPayments] = useState<BookingPayments>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
