@@ -162,13 +162,16 @@ export default function ProfileScreen() {
         ))}
       </View>
 
-      <View style={cardStyle()}>
+      <Pressable onPress={() => router.push('/rewards')} style={cardStyle()}>
         <Text style={{ color: Theme.colors.textMuted, fontSize: 12, fontWeight: '800', letterSpacing: 1 }}>POINT</Text>
         <Text style={{ color: Theme.colors.text, fontSize: 32, fontWeight: '900', marginTop: 8 }}>
           {summary.reward_points ?? 0}
         </Text>
         <Text style={{ color: Theme.colors.textMuted }}>Reward Point</Text>
-      </View>
+        <Text style={{ color: Theme.colors.accent, fontWeight: '900', marginTop: 10 }}>
+          LIHAT REWARD & RIWAYAT ›
+        </Text>
+      </Pressable>
 
       <View style={cardStyle()}>
         <Text style={{ color: Theme.colors.textMuted, fontSize: 12, fontWeight: '800', letterSpacing: 1 }}>REFERRAL</Text>
